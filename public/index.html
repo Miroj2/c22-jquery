@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    Halaman Utama
+  </title>
+  <style>
+    body {
+      padding: 50px;
+      font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    }
+
+    .filters {
+      width: 100%;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    #myTable a {
+      text-decoration: none;
+      color: black;
+    }
+
+    #myTable {
+      vertical-align: middle;
+    }
+
+    #add {
+      text-decoration: none;
+      color: green;
+      font-size: 25px;
+    }
+
+    .icons {
+      font-size: 25px;
+      align-items: center;
+    }
+
+    #delete {
+      color: red;
+    }
+
+    #edit {
+      color: green;
+    }
+
+    .pagination {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .pagination button {
+      padding: 5px 10px;
+      margin: 0 5px;
+      cursor: pointer;
+      outline: 1px solid #494a4f;
+      border-radius: 1px;
+      border: none;
+    }
+
+    .hidden {
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      height: 1px;
+      overflow: hidden;
+      position: absolute;
+      white-space: nowrap;
+      width: 1px;
+    }
+
+    .pagination button.active {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .table__header {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #add {
+      background-color: transparent;
+      border: none;
+      margin: 0;
+      padding: 0;
+      text-align: inherit;
+      font: inherit;
+      border-radius: 0;
+      appearance: none;
+      text-decoration: none;
+      color: green;
+      font-size: 25px;
+    }
+  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+    integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body id="body">
+  <h1 id="filter">Filters</h1>
+  <table class="table table-striped">
+    <form action="" id="filterform" method="get">
+      <tbody>
+        <tr>
+        <tr>
+          <th scope="col">
+            <label for="searchnumber">Number</label>
+          </th>
+          <th scope="col">
+            <input type="number" name="searchnumber" placeholder="No." id="searchnumber" class="filters">
+          </th>
+        </tr>
+        <th scope="col">
+          <label for="searchstring">String</label>
+        </th>
+        <th scope="col">
+          <input type="text" name="searchstring" placeholder="String" id="searchstring" class="filters">
+        </th>
+        </tr>
+        <tr>
+          <th scope="col">
+            <label for="searchinteger">Integer</label>
+          </th>
+          <th scope="col">
+            <input type="number" name="searchinteger" placeholder="Integer" id="searchinteger" class="filters">
+          </th>
+        </tr>
+        <tr>
+          <th scope="col">
+            <label for="searchfloat">Float</label>
+          </th>
+          <th scope="col">
+            <input type="number" name="searchfloat" placeholder="Float" step="any" id="searchfloat" class="filters">
+          </th>
+        </tr>
+        <tr>
+          <th scope="col">
+            <label for="searchdatefrom">Date</label>
+          </th>
+          <th scope="col">
+            <input type="date" name="searchdatefrom" class="filters" id="searchdatefrom">
+          </th>
+          <th scope="col">
+            <label for="searchdateto">to</label>
+          </th>
+          <th scope="col">
+            <input type="date" name="searchdateto" class="filters" id="searchdateto">
+          </th>
+        </tr>
+        <tr>
+          <th scope="col">
+            <label for="searchboolean">Boolean</label>
+          </th>
+          <th scope="col">
+            <select name="searchboolean" class="filters" id="searchboolean">
+              <option value="none">None</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+          </th>
+        </tr>
+        <th scope="col">
+          <button type="submit" value="Submit" class="bi bi-search" id="submitFilter" onclick="getFilters()">
+            Search</button>
+        </th>
+        <th scope="col">
+          <button onclick="window.location.href='/';" class="bi bi-bootstrap-reboot"> Reset</button>
+        </th>
+      </tbody>
+    </form>
+  </table>
+  <button onclick="loadFormAdd()" class="bi bi-person-fill-add" id="add"> Add</button>
+  <table id="myTable" class="table table-striped">
+    <thead id="tableHeader">
+    </thead>
+    <tbody id="tableBody" data>
+    </tbody>
+  </table>
+  </article>
+  <nav aria-label="..." id="pagination">
+  </nav>
+
+  <script>
+
+    let url = "http://localhost:8000/data"
+
+    $.urlParam = function (name) {
+      var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+      if (results == null) {
+        return null;
+      }
+      return decodeURI(results[1]) || 0;
+    }
+
+    let page = $.urlParam('page');
+    let sortBy = $.urlParam('sortBy');
+    let sortMode = $.urlParam('sortMode') || ''
+    let searchNumber = $.urlParam('searchnumber') || ''
+    let searchString = $.urlParam('searchstring') || ''
+    let searchInteger = $.urlParam('searchinteger') || ''
+    let searchFloat = $.urlParam('searchfloat') || ''
+    let searchDateFrom = $.urlParam('searchdatefrom') || ''
+    let searchDateTo = $.urlParam('searchdateto') || ''
+    let searchBoolean = $.urlParam('searchboolean') || ''
+
+    url = `${url}?page=${page}&sortBy=${sortBy}&sortMode=${sortMode}&searchnumber=${searchNumber}&searchstring=${searchString}&searchinteger=${searchInteger}&searchfloat=${searchFloat}&searchdatefrom=${searchDateFrom}&searchdateto=${searchDateTo}&searchboolean=${searchBoolean}`
+    fetchData(url);
+
+    document.getElementById("submitFilter").addEventListener("click", function (event) {
+      event.preventDefault()
+    });
+
+    function getFilters() {
+      const table = $('#tableBody')
+      const searchNumber = document.getElementById('searchnumber').value;
+      const searchString = document.getElementById('searchstring').value;
+      const searchInteger = document.getElementById('searchinteger').value;
+      const searchFloat = document.getElementById('searchfloat').value;
+      const searchDateFrom = document.getElementById('searchdatefrom').value;
+      const searchDateTo = document.getElementById('searchdateto').value;
+      const searchBoolean = document.getElementById('searchboolean').value;
+
+      table.html('')
+      const filterUrl = `http://localhost:8000/data?&searchnumber=${searchNumber}&searchstring=${searchString}&searchinteger=${searchInteger}&searchfloat=${searchFloat}&searchdatefrom=${searchDateFrom}&searchdateto=${searchDateTo}&searchboolean=${searchBoolean}`
+      fetchData(filterUrl)
+    }
+
+    function fetchData(url) {
+      fetch(url)
+        .then(res => res.json())
+        .then((data) => {
+          const tableBody = $('#tableBody')
+          const tableHeader = $('#tableHeader')
+
+          let thead = ''
+          thead = `
+                <tr>
+                  <th scope="col" data-type="number"><a href="/?sortBy=number&sortMode=${data.sortMode == 'asc' ? 'desc' : 'asc'}&searchnumber=${data.searchNumber}&searchstring=${data.searchString}&searchinteger=${data.searchInteger}&searchfloat=${data.searchFloat}&searchdatefrom=${data.searchDateFrom}&searchdateto=${data.searchDateTo}&searchboolean=${data.searchBoolean}">No. &#8693;</a>
+                    </th>
+                  <th scope="col"><a href="/?sortBy=string&sortMode=${data.sortMode == 'asc' ? 'desc' : 'asc'}&sortMode=${data.sortMode == 'asc' ? 'desc' : 'asc'}&searchnumber=${data.searchNumber}&searchstring=${data.searchString}&searchinteger=${data.searchInteger}&searchfloat=${data.searchFloat}&searchdatefrom=${data.searchDateFrom}&searchdateto=${data.searchDateTo}&searchboolean=${data.searchBoolean}">String &#8693;</a>
+                    </th>
+                  <th scope="col" data-type="number"><a href="/?sortBy=integer&sortMode=${data.sortMode == 'asc' ? 'desc' : 'asc'}&sortMode=${data.sortMode == 'asc' ? 'desc' : 'asc'}&searchnumber=${data.searchNumber}&searchstring=${data.searchString}&searchinteger=${data.searchInteger}&searchfloat=${data.searchFloat}&searchdatefrom=${data.searchDateFrom}&searchdateto=${data.searchDateTo}&searchboolean=${data.searchBoolean}">Integer
+            &#8693;</a>
+                    </th>
+                  <th scope="col" data-type="number"><a href="/?sortBy=float&sortMode=${data.sortMode == 'asc' ? 'desc' : 'asc'}&sortMode=${data.sortMode == 'asc' ? 'desc' : 'asc'}&searchnumber=${data.searchNumber}&searchstring=${data.searchString}&searchinteger=${data.searchInteger}&searchfloat=${data.searchFloat}&searchdatefrom=${data.searchDateFrom}&searchdateto=${data.searchDateTo}&searchboolean=${data.searchBoolean}">Float &#8693;</a>
+                    </th>
+                  <th scope="col"><a href="/?sortBy=date&sortMode=${data.sortMode == 'asc' ? 'desc' : 'asc'}&sortMode=${data.sortMode == 'asc' ? 'desc' : 'asc'}&searchnumber=${data.searchNumber}&searchstring=${data.searchString}&searchinteger=${data.searchInteger}&searchfloat=${data.searchFloat}&searchdatefrom=${data.searchDateFrom}&searchdateto=${data.searchDateTo}&searchboolean=${data.searchBoolean}">Date &#8693;</a>
+                    </th>
+                  <th scope="col"><a href="/?sortBy=boolean&sortMode=${data.sortMode == 'asc' ? 'desc' : 'asc'}&sortMode=${data.sortMode == 'asc' ? 'desc' : 'asc'}&searchnumber=${data.searchNumber}&searchstring=${data.searchString}&searchinteger=${data.searchInteger}&searchfloat=${data.searchFloat}&searchdatefrom=${data.searchDateFrom}&searchdateto=${data.searchDateTo}&searchboolean=${data.searchBoolean}">Boolean
+            &#8693;</a>
+                    </th>
+                  <th colspan="2" scope="col" id="actions">Actions</th>
+                </tr>
+                  `
+
+          tableHeader.html(thead)
+
+          for (let i = 0; i < data.results.length; i++) {
+            const row = `<tr data-id=${data.results[i]._id}>
+                      <td>${data.results[i].number}</td>
+                      <td>${data.results[i].string}</td>
+                      <td>${data.results[i].integer}</td>
+                      <td>${data.results[i].float}</td>
+                      <td>${data.results[i].date}</td>
+                      <td>${data.results[i].boolean}</td>
+                      <td>
+            <a href="#" method="post"><i id="delete" class="bi bi-trash-fill icons"></i></a>
+          </td>
+          <td>
+            <a href=""><i id="edit" class="bi bi-pencil-square icons"></i></a>
+          </td>
+                </tr>`
+
+            tableBody.append(row)
+          }
+
+          const pagination = $('#pagination');
+          const pageBefore = `
+                        <ul class="pagination">
+                        <li class="page-item ${data.page == 1 ? "disabled" : ""}">
+                          <a class="page-link" href="/?page=${data.page - 1}&sortBy=${data.sortBy}&sortMode=${data.sortMode}&searchnumber=${data.searchNumber}&searchstring=${data.searchString}&searchinteger=${data.searchInteger}&searchfloat=${data.searchFloat}&searchdatefrom=${data.searchDateFrom}&searchdateto=${data.searchDateTo}&searchboolean=${data.searchBoolean}" id="prev">&laquo;</a>
+                        </li>
+                      `
+          const pageAfter = `
+          <li class="page-item ${data.page == data.totalPage ? "disabled" : ""}">
+            <a class="page-link" href="/?page=${data.page + 1}&sortBy=${data.sortBy}&sortMode=${data.sortMode}&searchnumber=${data.searchNumber}&searchstring=${data.searchString}&searchinteger=${data.searchInteger}&searchfloat=${data.searchFloat}&searchdatefrom=${data.searchDateFrom}&searchdateto=${data.searchDateTo}&searchboolean=${data.searchBoolean}" id="next">&raquo;</a>
+                            </li>
+                        </ul>
+                      `
+
+
+          let pages = ""
+
+          for (let i = 0; i < data.totalPage; i++) {
+            pages2 = `<li class="page-item ${data.page == i + 1 ? "active" : ""}">
+              <a class="page-link" href="/?page=${i + 1}&sortBy=${sortBy}&sortMode=${data.sortMode}&searchnumber=${data.searchNumber}&searchstring=${data.searchString}&searchinteger=${data.searchInteger}&searchfloat=${data.searchFloat}&searchdatefrom=${data.searchDateFrom}&searchdateto=${data.searchDateTo}&searchboolean=${data.searchBoolean}">
+                            ${i + 1}
+                          </a>
+                        </li>`
+            pages += pages2
+          }
+
+          const wholePages = pageBefore + pages + pageAfter
+          pagination.html(wholePages)
+
+          $("#tableBody").on("click", function (e) {
+            e.preventDefault();
+            const delButtonIsPressed = e.target.id == 'delete';
+            const editButtonIsPressed = e.target.id == 'edit';
+            const id = e.target.parentElement.parentElement.parentElement.dataset.id
+
+            if (delButtonIsPressed) {
+              fetch(`http://localhost:8000/data/${id}`, {
+                method: 'DELETE',
+              })
+                .then(res => res.json())
+              window.location.href = "/"
+            }
+            if (editButtonIsPressed) {
+              loadFormEdit(id)
+            }
+          });
+        });
+    }
+
+    function loadFormEdit(id) {
+      fetch(`http://localhost:8000/data/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          let html = ''
+          html = `
+      <h1>Edit Data</h1>
+    <table class="table table-striped">
+        <form action="" method="post">
+            <tbody>
+                <tr>
+                    <td>
+                        <label for="string">String</label>
+                    </td>
+                    <td>
+                        <input type="text" id="string" name="string" placeholder="string" class="edits"
+                            value="${data.string}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="integer">Integer</label>
+                    </td>
+                    <td>
+                        <input type="number" id="integer" name="integer" placeholder="integer" class="edits"
+                            value="${data.integer}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="float">Float</label>
+                    </td>
+                    <td>
+                        <input type="number" id="float" name="float" placeholder="float" step="any" class="edits"
+                            value="${data.float}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Date</label>
+                    </td>
+                    <td>
+                        <input type="date" id="date" name="date" class="edits" value="${data.date}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Boolean</label>
+                    </td>
+                    <td>
+                        <select id="boolean" name="boolean" class="edits" value="${data.boolean}">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </td>
+                </tr>
+                <td>
+                    <button type="submit" id="submitEdit" class="btn btn-success">Save</button>
+                </td>
+                <td>
+                    <a href="../" class="btn btn-danger">Cancel</a>
+                </td>
+            </tbody>
+        </form>
+    </table>
+      `
+          const body = $('#body')
+          body.html(html)
+          const submitEdit = $('#submitEdit')
+          submitEdit.on('click', () => {
+            fetch(`http://localhost:8000/data/${id}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                string: $('#string').val(),
+                integer: $('#integer').val(),
+                float: $('#float').val(),
+                date: $('#date').val(),
+                boolean: $('#boolean').find(":selected").val()
+              })
+            })
+              .then(res => res.json())
+              .then(data => fetchData())
+            window.location.href = "/"
+          })
+
+        })
+    }
+
+    function loadFormAdd() {
+      let html = ''
+      html = `
+    <h1>Add Data</h1>
+    <table class="table table-striped">
+        <form action="" method="post" id="postForm">
+            <tbody>
+                <tr>
+                    <td>
+                        <label for="string">String</label>
+                    </td>
+                    <td>
+                        <input type="text" name="string" placeholder="string" class="adds" id="string">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="integer">Integer</label>
+                    </td>
+                    <td>
+                        <input type="number" name="integer" placeholder="integer" class="adds" id="integer">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="float">Float</label>
+                    </td>
+                    <td>
+                        <input type="number" name="float" placeholder="float" step="any" class="adds" id="float">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Date</label>
+                    </td>
+                    <td>
+                        <input type="date" name="date" class="adds" id="date">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Boolean</label>
+                    </td>
+                    <td>
+                        <select name="boolean" class="adds" id="boolean">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </td>
+                </tr>
+                <td>
+                    <button onclick="submitForm()" id="submitButton" class="btn btn-success">Save</button>
+                </td>
+                <td>
+                    <a href="/" class="btn btn-danger">Cancel</a>
+                </td>
+            </tbody>
+        </form>
+
+    </table>
+      `
+      const body = $('#body')
+      body.html(html)
+    }
+
+    function submitForm() {
+      fetch("http://localhost:8000/data", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          string: $('#string').val(),
+          integer: $('#integer').val(),
+          float: $('#float').val(),
+          date: $('#date').val(),
+          boolean: $('#boolean').find(":selected").val()
+        })
+      })
+        .then(res => res.json())
+        .then(data => fetchData())
+      window.location.href = "/"
+    }
+
+  </script>
+</body>
+
+</html>

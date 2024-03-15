@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add</title>
+    <link rel="stylesheet" type="text/css" href="stylesheets/add-style.css" />
+</head>
+
+<body>
+    <h1>Add Data</h1>
+    <table>
+        <form action="" method="post">
+            <tbody>
+                <tr>
+                    <td>
+                        <label for="string">String</label>
+                    </td>
+                    <td>
+                        <input type="text" name="string" placeholder="string" class="adds">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="integer">Integer</label>
+                    </td>
+                    <td>
+                        <input type="number" name="integer" placeholder="integer" class="adds">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="float">Float</label>
+                    </td>
+                    <td>
+                        <input type="number" name="float" placeholder="float" step="any" class="adds">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Date</label>
+                    </td>
+                    <td>
+                        <input type="date" name="date" class="adds">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Boolean</label>
+                    </td>
+                    <td>
+                        <select name="boolean" class="adds">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </td>
+                </tr>
+                <td>
+                    <button type="submit">Save</button>
+                </td>
+                <td>
+                    <a href="/">Cancel</a>
+                </td>
+            </tbody>
+        </form>
+
+    </table>
+</body>
+
+</html>
